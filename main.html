@@ -329,14 +329,22 @@ const pages = {
 
 
         ${c.stock > 0 ? `
-        <form id="reserve" class="form" novalidate>
-          <h3>Reserve this chicken</h3>
-          <label>Your name<input name="name" required minlength="2" maxlength="80" autocomplete="name"></label>
-          <label>Phone<input name="phone" required pattern="[0-9+\\-\\s]{7,20}" inputmode="tel" autocomplete="tel"></label>
-          <label>Quantity<input name="qty" type="number" min="1" max="${c.stock}" value="1" required></label>
-          <button class="btn">Reserve now</button>
-          <p id="note" role="status"></p>
-        </form>` : '<p class="muted">This chicken is sold out. Browse similar birds below.</p>'}
+        <button class="btn" id="openReserve">Reserve now</button>
+        <div id="reserveModal" hidden style="position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:50;opacity:0;transition:opacity .25s cubic-bezier(.22,1,.36,1)">
+          <div style="background:var(--bg);padding:1.5rem;border-radius:var(--r);max-width:560px;width:92%;max-height:90vh;overflow:auto">
+            <form id="reserve" class="form" novalidate>
+              <h3>Reserve this chicken</h3>
+              <label>Your name<input name="name" required minlength="2" maxlength="80" autocomplete="name"></label>
+              <label>Phone<input name="phone" required pattern="[0-9+\\-\\s]{7,20}" inputmode="tel" autocomplete="tel"></label>
+              <label>Quantity<input name="qty" type="number" min="1" max="${c.stock}" value="1" required></label>
+              <div style="display:flex;gap:.6rem">
+                <button class="btn">Reserve now</button>
+                <button type="button" class="btn ghost" id="closeReserve">Cancel</button>
+              </div>
+              <p id="note" role="status"></p>
+            </form>
+          </div>
+        </div>` : '<p class="muted">This chicken is sold out. Browse similar birds below.</p>'}
       </div>
     </section>
 
@@ -725,6 +733,16 @@ function initChicken(id) {
     b.onclick = () => { $('#big').src = b.dataset.src; };
   });
 
+
+  const openBtn = $('#openReserve');
+  const modal = $('#reserveModal');
+  if (openBtn && modal) {
+    openBtn.onclick = () => { modal.hidden = false; modal.style.display = 'flex'; requestAnimationFrame(() => { modal.style.opacity = '1'; }); };
+    const closeBtn = $('#closeReserve');
+    const closeModal = () => { modal.style.opacity = '0'; setTimeout(() => { modal.hidden = true; modal.style.display = 'none'; }, 250); };
+    if (closeBtn) closeBtn.onclick = closeModal;
+    modal.onclick = e => { if (e.target === modal) closeModal(); };
+  }
 
   const f = $('#reserve');
   if (!f) return;
