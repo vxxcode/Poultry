@@ -771,9 +771,18 @@ function initChicken(id) {
     store.set('pf_inquiries', l);
 
 
-    n.className = 'ok';
-    n.textContent = 'Thank you! We will contact you soon to confirm.';
-    f.reset();
+     n.className = 'ok';
+     n.textContent = 'Thank you! We will contact you soon to confirm.';
+     f.reset();
+     // close modal and show success popup
+     const modal = $('#reserveModal');
+     if (modal) { modal.style.opacity = '0'; setTimeout(() => { modal.hidden = true; modal.style.display = 'none'; }, 250); }
+     let popup = document.createElement('div');
+     popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:60;opacity:0;transition:opacity .25s';
+     popup.innerHTML = '<div style="background:var(--bg);padding:1.5rem;border-radius:var(--r);max-width:420px;width:92%;text-align:center"><h3 style="color:var(--green)">Reservation successful</h3><p>Thank you! We will contact you soon to confirm.</p><button class="btn" id="closeSuccess">OK</button></div>';
+     document.body.appendChild(popup);
+     requestAnimationFrame(() => { popup.style.opacity = '1'; });
+     popup.querySelector('#closeSuccess').onclick = () => { popup.style.opacity = '0'; setTimeout(() => popup.remove(), 250); };
   };
 }
 
